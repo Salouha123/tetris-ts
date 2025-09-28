@@ -21,23 +21,23 @@ window.addEventListener("keydown", (e) => {
       game.pause();
       break;
     case "ArrowLeft":
-    case "a"
-    case "A"
+    case "a":
+    case "A":
       game.move(-1);
       break;
     case "ArrowRight":
-    case "d"
-    case "D"
+    case "d":
+    case "D":
     game.move(1);
       break;
     case "ArrowUp":
-    case "w"
-    case "W"
+    case "w":
+    case "W":
     game.rotate();
       break;
     case "ArrowDown":
-    case "s"
-    case "S"
+    case "s":
+    case "S":
     game.step();
       break;
     case " ":

@@ -22,6 +22,7 @@ export class Game {
   accumulator: number;
   running: boolean;
   lastTime: number;
+  paused: boolean = false;
 
   constructor(renderer: Renderer) {
     this.grid = new Grid();
@@ -37,6 +38,7 @@ export class Game {
     this.accumulator = 0;
     this.running = false;
     this.lastTime = 0;
+    this.paused = false;
   }
 
   start() {
@@ -48,7 +50,7 @@ export class Game {
 
   spawn() {
     this.current = this.next;
-    this.current.row = -this.current.height();
+    this.current.row = 0;
     this.current.col = Math.floor((10 - this.current.width()) / 2);
     this.next = new Piece(randKind());
     this.canHold = true;
@@ -59,6 +61,13 @@ export class Game {
     }
   }
 
+pause() {
+  this.running = !this.running;
+  if (this.running) {
+    this.lastTime = performance.now();
+    requestAnimationFrame(this.loop.bind(this));
+  }
+}
   loop(ts: number) {
     if (!this.running) return;
     const dt = (ts - this.lastTime) / 1000;
@@ -67,6 +76,10 @@ export class Game {
     if (this.accumulator >= this.dropInterval) {
       this.step();
       this.accumulator = 0;
+    if (this.running) {
+        requestAnimationFrame(this.loop.bind(this))
+        return;
+    } 
     }
 
     // draw
@@ -139,7 +152,7 @@ export class Game {
       const tmp = this.hold;
       this.hold = new Piece(this.current.kind);
       this.current = new Piece(tmp.kind);
-      this.current.row = -this.current.height();
+      this.current.row = 0;
       this.current.col = Math.floor((10 - this.current.width()) / 2);
       if (!this.grid.validPosition(this.current)) {
         this.running = false;
