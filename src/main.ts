@@ -12,17 +12,33 @@ const game = new Game(renderer);
 window.addEventListener("keydown", (e) => {
   if (!game) return;
   switch (e.key) {
+    case "r":
+    case "R":
+      game.restart();
+      break;    
+    case "p":
+    case "P":
+      game.pause();
+      break;
     case "ArrowLeft":
+    case "a"
+    case "A"
       game.move(-1);
       break;
     case "ArrowRight":
-      game.move(1);
+    case "d"
+    case "D"
+    game.move(1);
       break;
     case "ArrowUp":
-      game.rotate();
+    case "w"
+    case "W"
+    game.rotate();
       break;
     case "ArrowDown":
-      game.step();
+    case "s"
+    case "S"
+    game.step();
       break;
     case " ":
       e.preventDefault();
@@ -43,3 +59,4 @@ document.getElementById("restart")?.addEventListener("click", () => {
 document.addEventListener("DOMContentLoaded", () => {
   game.start();
 });
+p
