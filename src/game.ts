@@ -18,11 +18,12 @@ export class Game {
   score: number;
   lines: number;
   level: number;
-  dropInterval: number; // seconds
+  dropInterval: number;
   accumulator: number;
   running: boolean;
   lastTime: number;
   paused: boolean = false;
+  private highScore: number;
 
   constructor(renderer: Renderer) {
     this.grid = new Grid();
@@ -34,11 +35,13 @@ export class Game {
     this.score = 0;
     this.lines = 0;
     this.level = 1;
-    this.dropInterval = 0.8; // seconds at level 1
+    this.dropInterval = 0.8;
     this.accumulator = 0;
     this.running = false;
     this.lastTime = 0;
     this.paused = false;
+    this.highScore = this.loadHighScore();
+    this.updateHighScoreDisplay();
   }
 
   start() {
@@ -56,18 +59,18 @@ export class Game {
     this.canHold = true;
     if (!this.grid.validPosition(this.current)) {
       // game over
-      this.running = false;
-      alert("Game Over");
+      this.gameOver();
     }
   }
 
-pause() {
-  this.running = !this.running;
-  if (this.running) {
-    this.lastTime = performance.now();
-    requestAnimationFrame(this.loop.bind(this));
+  pause() {
+    this.running = !this.running;
+    if (this.running) {
+      this.lastTime = performance.now();
+      requestAnimationFrame(this.loop.bind(this));
+    }
   }
-}
+
   loop(ts: number) {
     if (!this.running) return;
     const dt = (ts - this.lastTime) / 1000;
@@ -76,10 +79,10 @@ pause() {
     if (this.accumulator >= this.dropInterval) {
       this.step();
       this.accumulator = 0;
-    if (this.running) {
-        requestAnimationFrame(this.loop.bind(this))
+      if (this.running) {
+        requestAnimationFrame(this.loop.bind(this));
         return;
-    } 
+      } 
     }
 
     // draw
@@ -116,13 +119,12 @@ pause() {
     this.current.rotate(1);
 
     if (!this.grid.validPosition(this.current)) {
-      // simple kicks: left, right, up
       this.current.col -= 1;
       if (!this.grid.validPosition(this.current)) {
         this.current.col += 2;
         if (!this.grid.validPosition(this.current)) {
           this.current.col -= 1;
-          this.current.rotation = oldRot; // rollback
+          this.current.rotation = oldRot;
         }
       }
     }
@@ -155,7 +157,7 @@ pause() {
       this.current.row = 0;
       this.current.col = Math.floor((10 - this.current.width()) / 2);
       if (!this.grid.validPosition(this.current)) {
-        this.running = false;
+        this.gameOver();
       }
     }
     this.canHold = false;
@@ -168,6 +170,9 @@ pause() {
     this.lines += cleared;
     this.level = 1 + Math.floor(this.lines / 10);
     this.dropInterval = Math.max(0.05, 0.8 - (this.level - 1) * 0.05);
+    
+    // Vérifier et mettre à jour le high score
+    this.checkAndUpdateHighScore();
   }
 
   restart() {
@@ -183,5 +188,44 @@ pause() {
     this.accumulator = 0;
     this.running = false;
     this.start();
+  }
+
+  private loadHighScore(): number {
+    const saved = localStorage.getItem('tetris-highscore');
+    return saved ? parseInt(saved, 10) : 0;
+  }
+
+  private saveHighScore(): void {
+    localStorage.setItem('tetris-highscore', this.highScore.toString());
+  }
+
+  private updateHighScoreDisplay(): void {
+    const highscoreEl = document.getElementById('highscore');
+    if (highscoreEl) {
+      highscoreEl.textContent = `Best: ${this.highScore}`;
+    }
+  }
+
+  private checkAndUpdateHighScore(): void {
+    if (this.score > this.highScore) {
+      this.highScore = this.score;
+      this.saveHighScore();
+      this.updateHighScoreDisplay();
+      
+      // Animation quand on bat le record
+      const highscoreEl = document.getElementById('highscore');
+      if (highscoreEl) {
+        highscoreEl.style.animation = 'none';
+        setTimeout(() => {
+          highscoreEl.style.animation = 'pulse 0.5s ease';
+        }, 10);
+      }
+    }
+  }
+
+  public gameOver(): void {
+    this.running = false;
+    this.checkAndUpdateHighScore();
+    alert("Game Over! Score: " + this.score);
   }
 }

@@ -65,7 +65,7 @@ npm run build
 
 🚀 Utilisation
 
-1.Ouvrez votre navigateur et allez sur http://localhost:3000
+1.Ouvrez votre navigateur et allez sur http://localhost:5173
 2.Cliquez sur "Nouvelle Partie" pour commencer
 3.Utilisez les contrôles ci-dessous pour jouer
 
@@ -116,7 +116,7 @@ Le projet suit une architecture modulaire avec séparation des responsabilités 
 -tests/ - Tests unitaires pour grid et piece
 
 📸 Screenshots
-![alt text](<Capture d'écran 2025-09-28 163119-2.png>)
+![alt text](<Capture d'écran 2025-10-01 113051.png>)
 
 🧪 Tests
 

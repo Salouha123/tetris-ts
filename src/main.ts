@@ -1,3 +1,4 @@
+import "./style.css";
 import { Renderer } from "./renderer";
 import { Game } from "./game";
 import { CANVAS_WIDTH, CANVAS_HEIGHT } from "./constants";
@@ -59,4 +60,3 @@ document.getElementById("restart")?.addEventListener("click", () => {
 document.addEventListener("DOMContentLoaded", () => {
   game.start();
 });
-p
